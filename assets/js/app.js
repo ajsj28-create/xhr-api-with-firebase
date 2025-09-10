@@ -9,15 +9,15 @@ const addBtn = document.getElementById('addBtn');
 const updateBtn = document.getElementById('updateBtn');
 
 const base_url = `https://crudbyaniket-default-rtdb.asia-southeast1.firebasedatabase.app`;
-const allData_url = `${base_url}/persons.json`
+const allData_url = `${base_url}/persons.json`;
 
 const showLoader = () => {
     loader.classList.remove('d-none')
-}
+};
 
 const hideLoader = () => {
     loader.classList.add('d-none')
-}
+};
 
 const snackBar = (msg, icon) => {
     hideLoader()
