@@ -20,7 +20,6 @@ const hideLoader = () => {
 };
 
 const snackBar = (msg, icon) => {
-    hideLoader()
     swal.fire({
         title: msg,
         icon: icon,
@@ -51,7 +50,6 @@ const templating = (arr) => {
             </div>`
     })
     cardsContainer.innerHTML = result
-    hideLoader()
 };
 
 const getAllData = () => {
@@ -62,6 +60,7 @@ const getAllData = () => {
     xhr.setRequestHeader('Content-type', 'application/json')
     xhr.send(null)
     xhr.onload = () => {
+        hideLoader()
         if(xhr.status >= 200 && xhr.status <= 299){
             let res = JSON.parse(xhr.response)
             let resArray = []
@@ -77,6 +76,7 @@ const getAllData = () => {
     }
     xhr.onerror = () => {
         let err = `Network error occurred during XHR request`
+        hideLoader()
         snackBar(err, 'error')
     }
 };
@@ -113,7 +113,6 @@ const patchData = (obj) => {
     categoryControl.value = obj.category
     addBtn.classList.add('d-none')
     updateBtn.classList.remove('d-none')
-    hideLoader()
 };
 
 const updateCard = (obj) => {
@@ -127,7 +126,6 @@ const updateCard = (obj) => {
 };
 
 const onPersonAdd = (eve) => {
-    showLoader()
     eve.preventDefault()
     let newPersonObj = {
         name: nameControl.value,
@@ -135,12 +133,14 @@ const onPersonAdd = (eve) => {
         category: categoryControl.value
     }
     personsForm.reset()
+    showLoader()
     let xhr = new XMLHttpRequest()
     xhr.open('POST', allData_url)
     xhr.setRequestHeader('Authorization', 'Token')
     xhr.setRequestHeader('Content-type', 'application/json')
     xhr.send(JSON.stringify(newPersonObj))
     xhr.onload = () => {
+        hideLoader()
         if(xhr.status >= 200 && xhr.status <= 299){
             let resId = JSON.parse(xhr.response).name
             createNewCard({...newPersonObj, id: resId})
@@ -151,38 +151,40 @@ const onPersonAdd = (eve) => {
     }
     xhr.onerror = () => {
         let err = `Network error occurred during XHR request`
+        hideLoader()
         snackBar(err, 'error')
     }
 };
 
 const onEdit = (ele) => {
-    showLoader()
     let editId = ele.closest('.col-lg-4').id
     localStorage.setItem('editId', editId)
     let edit_url = `${base_url}/persons/${editId}.json`
+    showLoader()
     let xhr = new XMLHttpRequest()
     xhr.open('GET', edit_url)
     xhr.setRequestHeader('Authorization', 'Token')
     xhr.setRequestHeader('Content-type', 'application/json')
     xhr.send(null)
     xhr.onload = () => {
+        hideLoader()
         if(xhr.status >= 200 && xhr.status <= 299){
             let resEditObj = JSON.parse(xhr.response)
             patchData(resEditObj)
         }else{
-            let msg = `${xhr.status}: Something went wrong while creating person's card`
+            let msg = `${xhr.status}: Something went wrong while editing person's card`
             snackBar(msg, 'error')
         }
     }
     xhr.onerror = () => {
         let err = `Network error occurred during XHR request`
+        hideLoader()
         snackBar(err, 'error')
     }
 };
 
 const onPersonUpdate = () => {
     if(nameControl.value && infoControl.value){
-        showLoader()
         let updateId = localStorage.getItem('editId')
         localStorage.removeItem('editId')
         let update_url = `${base_url}/persons/${updateId}.json`
@@ -192,25 +194,29 @@ const onPersonUpdate = () => {
             category: categoryControl.value
         }
         personsForm.reset()
+        showLoader()
         let xhr = new XMLHttpRequest()
         xhr.open('PATCH', update_url)
         xhr.setRequestHeader('Authorization', 'Token')
         xhr.setRequestHeader('Content-type', 'application/json')
         xhr.send(JSON.stringify(updatedObj))
         xhr.onload = () => {
-        if(xhr.status >= 200 && xhr.status <= 299){
-            let resUpdatedObj = JSON.parse(xhr.response)
-            updateCard({...resUpdatedObj, id:updateId})
-        }else{
-            let msg = `${xhr.status}: Something went wrong while creating person's card`
-            snackBar(msg, 'error')
-        }
+            hideLoader()
+            if(xhr.status >= 200 && xhr.status <= 299){
+                let resUpdatedObj = JSON.parse(xhr.response)
+                updateCard({...resUpdatedObj, id:updateId})
+            }else{
+                let msg = `${xhr.status}: Something went wrong while updating person's card`
+                snackBar(msg, 'error')
+            }
         }
         xhr.onerror = () => {
             let err = `Network error occurred during XHR request`
+            hideLoader()
             snackBar(err, 'error')
         }
     }else{
+        hideLoader()
         snackBar(`Field cannot be empty while updating`, 'warning')
     }
 };
@@ -226,15 +232,16 @@ const onDelete = (ele) => {
         confirmButtonText: "Delete"
       }).then((result) => {
         if (result.isConfirmed){
-            showLoader()
             let deleteId = ele.closest('.col-lg-4').id
             let delete_url = `${base_url}/persons/${deleteId}.json`
+            showLoader()
             let xhr = new XMLHttpRequest()
             xhr.open('DELETE', delete_url)
             xhr.setRequestHeader('Authorization', 'Token')
             xhr.setRequestHeader('Content-type', 'application/json')
             xhr.send(null)
             xhr.onload = () => {
+                hideLoader()
                 if(xhr.status >= 200 && xhr.status <= 299){
                     ele.closest('.col-lg-4').remove()
                     snackBar(`Card deleted successfully`, 'success')
@@ -245,6 +252,7 @@ const onDelete = (ele) => {
             }
             xhr.onerror = () => {
                 let err = `Network error occurred during XHR request`
+                hideLoader()
                 snackBar(err, 'error')
             }
         }
