@@ -63,11 +63,10 @@ const getAllData = () => {
         hideLoader()
         if(xhr.status >= 200 && xhr.status <= 299){
             let res = JSON.parse(xhr.response)
-            let resArray = []
-            for(const idkey in res){
-                res[idkey].id = idkey
-                resArray.push(res[idkey])
-            }
+            let resArray = Object.entries(res).map(arr => ({
+                id: arr[0],
+                ...arr[1]
+            }))
             templating(resArray.reverse())
         }else{
             let msg = `${xhr.status}: Something went wrong while getting data`
