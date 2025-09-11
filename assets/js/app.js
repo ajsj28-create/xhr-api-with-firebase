@@ -48,8 +48,8 @@ const templating = (arr) => {
                     </div>
                 </div>
             </div>`
+        cardsContainer.innerHTML = result    
     })
-    cardsContainer.innerHTML = result
 };
 
 const getAllData = () => {
@@ -229,8 +229,8 @@ const onDelete = (ele) => {
         confirmButtonColor: "#3085d6",
         cancelButtonColor: "#d33",
         confirmButtonText: "Delete"
-      }).then((result) => {
-        if (result.isConfirmed){
+    }).then((result) => {
+        if(result.isConfirmed){
             let deleteId = ele.closest('.col-lg-4').id
             let delete_url = `${base_url}/persons/${deleteId}.json`
             showLoader()
@@ -242,8 +242,9 @@ const onDelete = (ele) => {
             xhr.onload = () => {
                 hideLoader()
                 if(xhr.status >= 200 && xhr.status <= 299){
+                    let name = ele.closest('.card').firstElementChild.firstElementChild.innerHTML
                     ele.closest('.col-lg-4').remove()
-                    snackBar(`Card deleted successfully`, 'success')
+                    snackBar(`${name} card deleted successfully`, 'success')
                 }else{
                     let msg = `${xhr.status}: Something went wrong while creating person's card`
                     snackBar(msg, 'error')
@@ -255,7 +256,7 @@ const onDelete = (ele) => {
                 snackBar(err, 'error')
             }
         }
-      });
+    });
 };
 
 personsForm.addEventListener('submit', onPersonAdd);
